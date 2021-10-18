@@ -8,11 +8,34 @@
         <meta name="author" content="" />
         {% load static %}
         <title>멜론 음악추천</title>
-        
         <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
         <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{% static 'css\styles.css' %}" rel="stylesheet " />
+        <script>
+
+            let trend_songs = JSON.parse(" {{ tsong_js | escapejs}} ")
+
+            let trend_song_1 = trend_songs.slice(0,5);
+            let trend_song_2 = trend_songs.slice(5,10);
+            let flag = 0;
+            
+            let song_display = []
+
+            let changeimg = () =>{
+                if flag %% 2 == 0{
+                    song_display= trend_song_1
+                    flag = flag+1
+                    console.log(flag)
+                }else{
+                    song_display = trend_song_2
+                    flag = flag+1
+                    console.log(flag)
+                }
+            };
+            }
+   
+        </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
         <style>
         .img_area img{vertical-align:middle;}
@@ -69,11 +92,15 @@
                                     <div class="card-body">
                                         <canvas width="100%" height="20"></canvas>
                                         <div class="row" >
+                                        
+                                        {% if trend_song %}
+
                                             <div class="col-md-1" style="text-align:center; ">
-                                                <img src="{%static 'images/왼쪽버튼.png' %}" style="position:relative; top: 35%;">
-                                            </div>
+                                                <button onclick="changeimg()" class="trend_button" style="position:relative; top: 35%;"> <img src="{%static 'images/왼쪽버튼.png' %}"> </button>
+                                            </div>                                            
                                             <div class="col-md-2" style="text-align:center; ">
-                                                <img src="{%static 'images/똥밟았네.jpg' %}" style="max-width: 100%; position:relative;  bottom: 4%">
+                                                <div><img src="{%static 'images/똥밟았네.jpg' %}" style="max-width: 100%; position:relative;  bottom: 4%"></div>
+                                                <div>똥밟았네</div>
                                             </div>
                                             <div class="col-md-2" style="text-align:center; ">
                                                 <img src="{%static 'images/퍼미션투댄스.jpg' %}" style="max-width: 100%; position:relative; bottom: 4%">
@@ -88,9 +115,15 @@
                                                 <img src="{%static 'images/백예린.jpg' %}" style="max-width: 100%; position:relative; bottom: 4%">
                                             </div>
                                             <div class="col-md-1" style="text-align:center; ">
-                                               <img src="{%static 'images/오른쪽버튼.png' %}" style="position:relative; top: 35%; ">
+                                               <button onclick="changeimg()" class="trend_button" style="position:relative; top: 35%;"> <img src="{%static 'images/오른쪽버튼.png' %}"> </button>
                                             </div>
                                         </div>
+
+                                        {% else %}
+                                             <div class="col-md-1" style="text-align:center; ">
+                                              정보가 없습니다.
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

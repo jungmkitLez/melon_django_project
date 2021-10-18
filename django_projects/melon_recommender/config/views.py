@@ -7,6 +7,3 @@ class IndexView(TemplateView):
     template_name = 'base.html'
 
 
-def index(request):
-
-    return render(request, 'melon_recommender/index.html')

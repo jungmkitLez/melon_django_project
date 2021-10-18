@@ -6,6 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from django.db.models.fields import IntegerField, TextField
 
 class Playlist(models.Model):
     playlist_id = models.IntegerField(primary_key=True)
@@ -134,6 +135,24 @@ class PlaylistTag(models.Model):
 
 
 
-    
+class RecentSongs(models.Model):
+    artist_name = models.TextField()
+    artist_main_genre = models.TextField()
+    artist_id = IntegerField()
+    song_id = IntegerField()
+    song_name = TextField()
+    cnt = IntegerField()
+    genre_big_name = TextField()
+    thunmb_url = TextField()
 
-
+    def to_json(self):
+        return {
+            "artist_name" : self.artist_name,
+            "artist_main_genre" : self.artist_main_genre,
+            "artist_id" : self.artist_id,
+            "song_id" : self.song_id,
+            "song_name" : self.song_name,
+            "cnt" : self.cnt,
+            "genre_big_name" : self.genre_big_name,
+            "thumb_url" : self.thunmb_url
+        }
