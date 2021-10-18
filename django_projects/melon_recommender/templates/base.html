@@ -1,0 +1,84 @@
+<html>
+
+
+<body>
+    {% csrf_token %}
+    태그를 입력하세요.<br>
+        
+
+    <input type="text" id="input_tag">
+    <button class="send">send</button>                    
+
+
+  <div id = "tag_results">
+  </div>
+  <hr>
+
+  <h3>추천 가수</h3>
+  <div id = "singer_results">    
+  </div>
+
+  <h3>가수기반 노래추천</h3>
+  <div id = "singer_song_results">    
+  </div>
+<hr>
+<br>
+{% if user.is_authenticated %}
+  {{user.username}} 로그인 됨<br>
+  <a href = "{% url 'users:logout'  %}"> 로그아웃</a>
+
+{% else %}
+
+  <a href="{% url 'users:login' %}">로그인</a>
+{% endif %}
+
+</body>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript">
+
+  // 태그기반 추천 api call
+  $(".send").click(function () {
+
+    var tags = $("#input_tag").val();
+    $.ajax({
+      type: "GET",
+      url: "{% url 'api:tag_recommend'%}?tags="+ tags, // 통신할 url을 지정
+      dataType: "json",
+
+      success: function (response) {
+        $("#tag_results").html(JSON.stringify(response));
+      },
+      error: function (request, status, error) {
+        $("#tag_results").html("결과가 없습니다.");
+      },
+    });
+  })
+
+  // 가수기반 추천 api call
+  $(document).ready(function () {
+
+    $.ajax({
+      type: "GET",
+      url: "{% url 'api:singer_recommend'%}", // 통신할 url을 지정  
+      dataType: "json",
+
+      success: function (response) {
+        $("#singer_results").html(JSON.stringify(response.artists));
+        $("#singer_song_results").html(JSON.stringify(response.songs));
+      },
+      error: function (request, status, error) {
+        $("#singer_results").html("결과가 없습니다.");
+        $("#singer_song_results").html("결과가 없습니다.");
+      },
+    });
+  })
+
+</script>
+
+
+
+</html>
