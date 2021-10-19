@@ -140,10 +140,10 @@ class RecentSongs(models.Model):
     artist_main_genre = models.TextField()
     artist_id = IntegerField()
     song_id = IntegerField()
-    song_name = TextField()
+    song_name = models.TextField()
     cnt = IntegerField()
-    genre_big_name = TextField()
-    thunmb_url = TextField()
+    genre_big_name = models.TextField()
+    thumb_url = models.TextField()
 
     def to_json(self):
         return {
@@ -154,5 +154,5 @@ class RecentSongs(models.Model):
             "song_name" : self.song_name,
             "cnt" : self.cnt,
             "genre_big_name" : self.genre_big_name,
-            "thumb_url" : self.thunmb_url
+            "thumb_url" : self.thumb_url
         }

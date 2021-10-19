@@ -6,34 +6,82 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="" />
         <meta name="author" content="" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         {% load static %}
         <title>멜론 음악추천</title>
         <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
         <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{% static 'css\styles.css' %}" rel="stylesheet " />
+        <style>
+            @import url(//fonts.googleapis.com/earlyaccess/jejumyeongjo.css);
+            
+            #tsong_list{
+                text-align: center
+            }
+            .genre{
+                font-weight: bold;
+                font-family: 'Jeju Myeongjo', serif;
+                font-size: small;
+            }
+            .artist{
+                font-weight: bolder;
+                font-family: 'Jeju Myeongjo', serif;
+                font-size: x-large;
+            }
+            .song{
+                
+                font-family: 'Jeju Myeongjo', serif;
+                font-size: large;
+            }
+        </style>
         <script>
 
-            let trend_songs = JSON.parse(" {{ tsong_js | escapejs}} ")
+            let trend_songs = JSON.parse(" {{ myquery | escapejs}} ")
+            let song_display = trend_songs.slice(0,5)
+            let trend_page = 0
 
-            let trend_song_1 = trend_songs.slice(0,5);
-            let trend_song_2 = trend_songs.slice(5,10);
-            let flag = 0;
-            
-            let song_display = []
-
-            let changeimg = () =>{
-                if flag %% 2 == 0{
-                    song_display= trend_song_1
-                    flag = flag+1
-                    console.log(flag)
-                }else{
-                    song_display = trend_song_2
-                    flag = flag+1
-                    console.log(flag)
+            $(document).ready(function(){
+                $.load_trend_songs = function(songs_display){
+                    $('#tsong_list').empty(); 
+                    $('#tsong_list').append('<div class="col-md-1"><button id="reduce_button" style="position:relative; top: 35%;"> <img src="{%static 'images/왼쪽버튼.png' %}"> </button></div>')
+                    for (var i =0; i<songs_display.length; i++){
+                        $('#tsong_list').append('<div class="col-md-2"><div><img src='+'"'+songs_display[i]["fields"]["thumb_url"]+'"'+"style='max-width: 100%; position:relative;  bottom: 4%'"+'></div><div class="genre">'+songs_display[i]["fields"]["genre_big_name"]+'</div><div class="artist">'+songs_display[i]["fields"]["artist_name"]+'</div><div class="song">'+songs_display[i]["fields"]["song_name"]+'</div></div>')
+                    }
+                    $('#tsong_list').append('<div class="col-md-1"><button id="increase_button" style="position:relative; top: 35%;"> <img src="{%static 'images/오른쪽버튼.png' %}"> </button></div> ')
                 }
-            };
-            }
+                $.load_trend_songs(song_display)
+            })
+
+            $(document).on("click","#reduce_button",function(){
+
+                    if (trend_page <= 0){
+                        let temp_display= trend_songs.slice(0,5);
+                        $.load_trend_songs(temp_display)               
+                    }else{
+                        trend_page = trend_page-1
+                        let start = trend_page*5
+                        let end = trend_page*5+5                        
+                        let temp_display = trend_songs.slice(start,end)
+                        $.load_trend_songs(temp_display)
+                    }
+                });
+
+            $(document).on("click","#increase_button",function(){
+
+                    if (trend_page >=(trend_songs.length/5)-1){
+                        let temp_display= trend_songs.slice(trend_songs.length-5,trend_songs.length);
+                        $.load_trend_songs(temp_display)                   
+                    }else{
+                        trend_page = trend_page+1
+                        let start = trend_page*5
+                        let end = trend_page*5+5
+                        let temp_display= trend_songs.slice(start,end)
+                        $.load_trend_songs(temp_display)
+                    }                    
+                });
+
+            
    
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
@@ -91,39 +139,9 @@
                                     <div class="card-header" style="border-style: 5px;">오늘의 추천</div>
                                     <div class="card-body">
                                         <canvas width="100%" height="20"></canvas>
-                                        <div class="row" >
+                                        <div class="row" id="tsong_list">
                                         
-                                        {% if trend_song %}
-
-                                            <div class="col-md-1" style="text-align:center; ">
-                                                <button onclick="changeimg()" class="trend_button" style="position:relative; top: 35%;"> <img src="{%static 'images/왼쪽버튼.png' %}"> </button>
-                                            </div>                                            
-                                            <div class="col-md-2" style="text-align:center; ">
-                                                <div><img src="{%static 'images/똥밟았네.jpg' %}" style="max-width: 100%; position:relative;  bottom: 4%"></div>
-                                                <div>똥밟았네</div>
-                                            </div>
-                                            <div class="col-md-2" style="text-align:center; ">
-                                                <img src="{%static 'images/퍼미션투댄스.jpg' %}" style="max-width: 100%; position:relative; bottom: 4%">
-                                            </div>
-                                            <div class="col-md-2" style="text-align:center; ">
-                                                <img src="{%static 'images/영웅.jpg' %}" style="max-width: 100%; position:relative; bottom: 4%">
-                                            </div>
-                                            <div class="col-md-2" style="text-align:center;">
-                                                <img src="{%static 'images/주말.jpg' %}" style="max-width: 100%; position:relative; bottom: 4%">
-                                            </div>
-                                             <div class="col-md-2" style="text-align:center;">
-                                                <img src="{%static 'images/백예린.jpg' %}" style="max-width: 100%; position:relative; bottom: 4%">
-                                            </div>
-                                            <div class="col-md-1" style="text-align:center; ">
-                                               <button onclick="changeimg()" class="trend_button" style="position:relative; top: 35%;"> <img src="{%static 'images/오른쪽버튼.png' %}"> </button>
-                                            </div>
                                         </div>
-
-                                        {% else %}
-                                             <div class="col-md-1" style="text-align:center; ">
-                                              정보가 없습니다.
-                                            </div>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

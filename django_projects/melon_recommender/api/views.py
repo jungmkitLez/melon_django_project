@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .models import Song,RecentSongs
 from .serializers import *
 from users.models import UserPlaylist
+from django.core import serializers
 import json 
 
 
@@ -47,16 +48,12 @@ class SingerRecommend(APIView):
 def index(request):
     
     query = '''select 1 id,artist_name, artist_main_genre,artist_id,song_id,song_name,thumb_url,cnt,genre_big_name from (select artist_name, artist_main_genre, artist_id,lng.song_id,song_name,cnt,thumb_url from (select artist_name, artist_main_genre, ars_cnt.artist_id, song_id, cnt from (select artist_id, s_cnt.song_id, cnt from (select song_id , count(song_id) as cnt  from (select playlist_id,update_date,like_cnt from playlist where like_cnt > 30 and update_date between '2020-01-01' and '2020-04-23' ) as rp join playlist_song as ps on rp.playlist_id = ps.playlist_id group by song_id order by cnt desc limit 10) as s_cnt join artist_song as ars on s_cnt.song_id = ars.song_id) as ars_cnt join artist on artist.artist_id = ars_cnt.artist_id) as lng join song on lng.song_id = song.song_id) as llng join genre_big as gb on gb.genre_big_code = llng.artist_main_genre order by cnt desc;'''
-    results = RecentSongs.objects.raw(query)
+    
+    data = serializers.serialize('json', RecentSongs.objects.raw(query), fields=('thumb_url' ,'artist_name', 'song_name' ,'genre_big_name'))
+
     context = {
-        "tsong_qset" : results,
-        "tsong_js" : json.dump([result.json() for result in results]),
-        'length' : len(results)
+        'myquery' : data
     }
-
-    from django.core import serializers
-    data = serializers.serialize('json', UserMcqAnswer.objects.raw(query), fields=('some_field_you_want', 'another_field', 'and_some_other_field'))
-
 
     return render(request, 'melon_recommender/index.html',context)
 
